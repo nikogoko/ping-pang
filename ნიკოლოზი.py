@@ -11,7 +11,7 @@ GREEN = (50, 209, 93)
 RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
 BLUE = (0, 0, 255)
-
+score = 3
 window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("anti ping pong")
 background = pygame.image.load("back.png")
@@ -25,11 +25,15 @@ class Enemy:
         self.y = randint(0, WINDOW_HEIGHT - self.height)
         self.color = choice([YELLOW, BLUE])
         self.speed = 3
-
+        self.direction = 1
+        self.touch = False
     def move(self):
-        self.x += self.speed
+        self.x += self.speed * self.direction
         if self.x > WINDOW_WIDTH:
             self.x = -self.width
+            self.y = randint(0, WINDOW_HEIGHT - self.height)
+        elif self.x < -self.width:
+            self.direction = 1
             self.y = randint(0, WINDOW_HEIGHT - self.height)
 
     def draw(self):
@@ -61,28 +65,34 @@ while running:
         if keys[pygame.K_DOWN] and player_y < WINDOW_HEIGHT - player_height:
             player_y += player_speed
 
-
         for enemy in enemies:
             enemy.move()
             enemy.draw()
 
-            # Collision detection between player and enemy
+
             if player_x < enemy.x + enemy.width and player_x + player_width > enemy.x \
                     and player_y < enemy.y + enemy.height and player_y + player_height > enemy.y:
-                    enemy.x -= 2 * enemy.speed
+                enemy.direction *= -1
+                if enemy.color == BLUE:
+                    score -= 1
+                    enemy.touch = True
+                if enemy.color == YELLOW:
+                    score += 1
+                    enemy.touch = True
 
-
-
-    else:
-
-        font = pygame.font.Font(None, 74)
-        text = font.render("Game Over", True, RED)
-        window.blit(text, (200, 250))
-
-
-
+    font = pygame.font.Font(None, 20)
+    text = font.render(f"Score {score}", True, (255, 255, 255))
+    window.blit(text, (10, 10))
+    if score > 100:
+        font = pygame.font.Font(None, 100)
+        text = font.render("you won ", True, (255, 255, 0))
+        window.blit(text, (222, 222))
+        game_over = True
+    if score <= 0:
+        font = pygame.font.Font(None, 100)
+        text = font.render("you lost ", True, (255, 0, 0))
+        window.blit(text, (222, 222))
     pygame.draw.rect(window, RED, (player_x, player_y, player_width, player_height))
-
 
     pygame.display.update()
 
