@@ -92,6 +92,7 @@ while running:
         font = pygame.font.Font(None, 100)
         text = font.render("you lost ", True, (255, 0, 0))
         window.blit(text, (222, 222))
+        game_over = True
     pygame.draw.rect(window, RED, (player_x, player_y, player_width, player_height))
 
     pygame.display.update()
